@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <title>CRÉATION D'IDÉE</title>
+</head>
+<body>
+    <div class="container" id="container">
+        <form id="form" action="" method="post">
+            <h4>Formulaire d'ajout d'idée</h4>
+            <div>
+                <label for="libelle">Libellé</label>
+                <input class="entree" type="text" name="libelle" id="libelle" placeholder="Votre idée">
+                <div class="error"></div>               
+            </div>
+            <div>
+                <label for="categorie">Catégorie</label>
+                <select class="entree" name="categorie" id="categorie">
+                    <option value="" selected disabled>Sélectionner une catégorie</option>
+                    <option value="education">Éducation</option>
+                    <option value="politique">Politique</option>
+                    <option value="sante">Santé</option>
+                    <option value="sport">Sport</option>
+                </select>
+                <div class="error"></div> 
+            </div>
+            <div>
+                <label for="description">Description</label>
+                <textarea class="entree" name="description" id="description" placeholder="Description"></textarea>
+                <div class="error"></div> 
+            </div>
+            <button type="submit" id="submit">Soumettre</button>       
+        </form> 
+    </div> 
+    <div class="messageSucces" id="messageSucces">
+        <div class="message-content1">
+            Formulaire soumis avec succès !
+        </div>
+    </div>
+    <div class="messageErreur" id="messageErreur">
+        <div class="message-content2">
+            Veuillez remplir tous les champs correctement.<br>Le libellé doivent contenir entre 10 et 40 caractères, la description entre 10 et 255 et il faut selectionner une catégorie
+        </div>
+    </div>
+    <script src="form.js" ></script>
+</body>
+</html>
