@@ -6,15 +6,11 @@
     box-sizing: border-box;
     font-family: "Roboto", sans-serif;
 }
-body{
-    background-color: #17a2b8;
-    
-}
 .container{
    display:flex;
    flex-direction: row; 
 }
-form{
+.container .main{
     display: flex;
     flex-direction: column;
     background-color: #fff;
@@ -74,13 +70,13 @@ form div i{
 }
 button{
     margin-top: 15px;
-    width: 100%;
+    width: 50%;
     height: 45px;
     background-color: #17a2b8;
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     color: #fff;
-    font-size: 20px;
+    font-size: 30px;
     cursor: pointer;
     transition: all 0.1s ease;
 }
@@ -117,6 +113,10 @@ button:hover{
 }
 .message-content2 {
     margin: 0 auto; /* Centre le contenu horizontalement */
+}
+.entete{
+    background: #17a2b8;
+    color: #ffffff;
 }
 @media(max-width:425px){
     form{
