@@ -1,173 +1,147 @@
-var selectedRow = null;
+const form = document.getElementById('form');
+const libelle = document.getElementById('libelle');
+const categorie = document.getElementById('categorie');
+const description = document.getElementById('description');
+const ideeList = document.getElementById('ideeList');
 
-// Show Alerts
-function showAlert(message, className){
-    const div = document.createElement("div");
-    div.className = `alert alert-${className}`;
+form.addEventListener('submit', e => {
+    e.preventDefault();
+    validateInputs();
+});
 
-    div.appendChild(document.createTextNode(message));
-    const container = document.querySelector(".container");
-    const main = document.querySelector(".main");
-    container.insertBefore(div, main);
+const setError = (element, message) => {
+    const inputControl = element.parentElement;
+    const errorDisplay = inputControl.querySelector('.error');
 
-    setTimeout(() => document.querySelector(".alert").remove(), 3000);
+    errorDisplay.innerText = message;
+    inputControl.classList.add('error');
+    inputControl.classList.remove('success');
+};
+
+const setSuccess = element => {
+    const inputControl = element.parentElement;
+    const errorDisplay = inputControl.querySelector('.error');
+
+    errorDisplay.innerText = '';
+    inputControl.classList.add('success');
+    inputControl.classList.remove('error');
+};
+
+const isValidLibelle = (value) => {
+    return value.length >= 10 && value.length <= 40;
 }
 
-//Clear All Fields
-/*function ClearFields(){
-    document.querySelector('#libelle').value = "";
-    document.querySelector('#categorie').value = "";
-    document.querySelector('#description').value = "";
-}*/
+const isValidDescription = (value) => {
+    return value.length >= 10 && value.length <= 255;
+}
 
-// Add Data
-document.querySelector("#form").addEventListener("submit", (e) => {
-    e.preventDefault();
+const validateInputs = () => {
+    const libelleValue = libelle.value.trim();
+    const categorieValue = categorie.value.trim();
+    const descriptionValue = description.value.trim();
 
-    // Get Form Values
-    const libelle = document.querySelector("#libelle").value;
-    const categorie = document.querySelector("#categorie").value;
-    const description = document.querySelector("#description").value;
+    let isFormValid = true;
 
-    // Validate
-    if (libelle == "" || categorie == "" || description == "") {
-        showAlert("Merci de compléter tous les champs", "danger")
+    // Libelle
+    if (libelleValue === '') {
+        isFormValid = false;
+    } else if (!isValidLibelle(libelleValue)) {
+        isFormValid = false;
     } else {
-        if (selectedRow == null) {
-            const list = document.querySelector("#idee-list");
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-            <td>${libelle}</td>
-            <td>${categorie}</td>
-            <td>${description}</td>
-            <td>
-                <a href="#" class="btn btn-success btn-sm approver">Approuver</a>
-                <a href="#" class="btn btn-danger btn-sm desapprouver">Déapprouver</a>
-                <a href="#" class="btn btn-danger btn-sm delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet idée ?');">
-                    <i class="fas fa-trash-alt"></i>
-                </a>
-            </td>`;
-            list.appendChild(row);
-            showAlert("Idée ajoutée", "success");
-
-            // Réinitialiser le formulaire après l'ajout
-            document.getElementById("form").reset();
-
-            // Sauvegarder dans le localStorage
-            saveIdeasToStorage();
-        }
+        isFormValid;
     }
 
-});
-// Fonction pour sauvegarder les idées dans le localStorage
-function saveIdeasToStorage() {
-    const rows = document.querySelectorAll("#idee-list tr");
-    const ideas = [];
-    rows.forEach(row => {
-        const libelle = row.cells[0].textContent;
-        const categorie = row.cells[1].textContent;
-        const description = row.cells[2].textContent;
-        const actions = row.cells[3];
-        ideas.push({ libelle, categorie, description, actions });
-    });
-    localStorage.setItem("ideas", JSON.stringify(ideas));
-}
-// Charger les idées depuis le localStorage au chargement de la page
-document.addEventListener("DOMContentLoaded", () => {
-    afficherIdeesFromStorage();
-});
+    // Catégorie
+    if (categorieValue === '') {
+        isFormValid = false;
+    } else {
+        isFormValid;
 
-// Fonction pour afficher les idées sauvegardées depuis le localStorage
-function afficherIdeesFromStorage() {
-    const ideas = JSON.parse(localStorage.getItem("ideas")) || [];
-    const list = document.querySelector("#idee-list");
-    list.innerHTML = ""; // Efface le contenu actuel du tableau
+    }
 
-    ideas.forEach(idea => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-        <td>${idea.libelle}</td>
-        <td>${idea.categorie}</td>
-        <td>${idea.description}</td>
+    // Description
+    if (descriptionValue === '') {
+        isFormValid = false;
+    } else if (!isValidDescription(descriptionValue)){
+        isFormValid = false;
+    } else {
+        isFormValid;
+
+    }
+
+    if (isFormValid) {
+        // Ajouter l'idée
+        addIdea(libelleValue, categorieValue, descriptionValue);
+
+        // Masquer le formulaire d'ajout
+        document.getElementById('form').style.display = 'none';
+
+         // Masquer le message d'erreur
+         document.getElementById('messageErreur').style.display = 'none';
+
+        // Afficher le message de succès
+        document.getElementById('messageSucces').style.display = 'block';
+
+        // Masquer le message de succès après 2 secondes et réafficher le formulaire
+        setTimeout(function() {
+        document.getElementById('messageSucces').style.display = 'none';
+        document.getElementById('form').style.display = 'block';
+        document.getElementById('form').reset();  // Réinitialiser le formulaire
+        }, 2000);
+    } else{
+        // Masquer le formulaire d'ajout
+        document.getElementById('form').style.display = 'none';
+
+        // Masquer le message de succès
+        document.getElementById('messageSucces').style.display = 'none';
+
+        // Afficher le message d'erreur
+        document.getElementById('messageErreur').style.display = 'block';
+
+         // Masquer le message d'erreur après 2 secondes et réafficher le formulaire
+        setTimeout(function() {
+        document.getElementById('messageErreur').style.display = 'none';
+        document.getElementById('form').style.display = 'block';
+        document.getElementById('form').reset();  // Réinitialiser le formulaire
+        }, 2000);
+
+    }
+};
+
+const addIdea = (libelle, categorie, description) => {
+    const row = document.createElement('tr');
+
+    row.innerHTML = `
+        <td>${libelle}</td>
+        <td>${categorie}</td>
+        <td>${description}</td>
         <td>
             <a href="#" class="btn btn-success btn-sm approver">Approuver</a>
-            <a href="#" class="btn btn-danger btn-sm desapprouver">Déapprouver</a>
-            <a href="#" class="btn btn-danger btn-sm delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet idée ?');">
+            <a href="#" class="btn btn-danger btn-sm desapprouver">Désapprouver</a>
+            <a href="#" class="btn btn-danger btn-sm delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette idée ?');">
                 <i class="fas fa-trash-alt"></i>
             </a>
         </td>`;
-        list.appendChild(row);
+        // dans tableau ou y ajoute une nouvelle ligne (<tr>, contenu dans la variable row) à la fin de ce corps de table.
+    document.getElementById('ideeList').querySelector('tbody').appendChild(row);
+    // Ajouter des événements aux nouveaux boutons
+    row.querySelector('.approver').addEventListener('click', () => {
+    const cells = row.querySelectorAll('td');
+    const Cell = cells[cells.length - 1]; // Dernière cellule pour les actions
+    Cell.textContent = 'Approuvée';
     });
-}
-
-// Delete Data
-
-document.querySelector("#idee-list").addEventListener("click", (e) =>{
-    target = e.target;
-    if(target.classList.contains("delete")){
-        target.parentElement.parentElement.remove();
-        showAlert("L'idée a été supprimée", "danger");
-    }
-});
-
-// Modèle d'idée avec une propriété d'état
-/*function Idea(libelle, categorie, description, status = 'Pending') {
-    this.libelle = libelle;
-    this.categorie = categorie;
-    this.description = description;
-    this.status = status; // Ajout de la propriété d'état
-}*/
+    row.querySelector('.desapprouver').addEventListener('click', () => {
+        const cells = row.querySelectorAll('td');
+        const Cell = cells[cells.length - 1]; // Dernière cellule pour les actions
+        Cell.textContent = 'Désapprouvée';
+    });
+    row.querySelector('.delete').addEventListener('click', () => {
+        row.remove();
+        deleteIdea(libelle);
+    });
+};
 
 
-// Approve Idea
-function approveIdea(row) {
-    const cells = row.querySelectorAll('td');
-    const statusCell = cells[cells.length - 1]; // Dernière cellule pour les actions
 
-    // Vérifier si déjà approuvé
-    if (statusCell.textContent.trim() === 'Approuvé') {
-        showAlert("L'idée est déjà approuvée", "warning");
-    } else {
-        statusCell.textContent = 'Approuvé';
-        showAlert("L'idée a été approuvée", "success");
-        // Mettre à jour l'état dans le localStorage
-        updateIdeaStatus(row, 'Approuvé');
-    }
-}
 
-// Disapprove Idea
-function disapproveIdea(row) {
-    const cells = row.querySelectorAll('td');
-    const statusCell = cells[cells.length - 1]; // Dernière cellule pour les actions
 
-    // Vérifier si déjà désapprouvé
-    if (statusCell.textContent.trim() === 'Désapprouvé') {
-        showAlert("L'idée est déjà désapprouvée", "warning");
-    } else {
-        statusCell.textContent = 'Désapprouvé';
-        showAlert("L'idée a été désapprouvée", "danger");
-        // Mettre à jour l'état dans le localStorage
-        updateIdeaStatus(row, 'Désapprouvé');
-    }
-}
-
-// Fonction pour mettre à jour l'état d'une idée dans le localStorage
-function updateIdeaStatus(row, status) {
-    const ideas = JSON.parse(localStorage.getItem("ideas")) || [];
-    const index = row.rowIndex - 1; // rowIndex commence à 1, mais l'index dans le tableau commence à 0
-    ideas[index].status = status;
-    localStorage.setItem("ideas", JSON.stringify(ideas));
-}
-
-// Écouter les clics sur les boutons d'approuvement et de désapprouvement
-document.querySelector("#idee-list").addEventListener("click", (e) => {
-    const target = e.target;
-    if (target.classList.contains("approver")) {
-        const row = target.parentElement.parentElement;
-        approveIdea(row);
-    } else if (target.classList.contains("desapprouver")) {
-        const row = target.parentElement.parentElement;
-        disapproveIdea(row);
-    }
-});
